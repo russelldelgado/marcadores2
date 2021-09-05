@@ -1,0 +1,15 @@
+  {% include "comunes/_mensajes.html.twig" %}
+   <form method="POST">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input type="text" class="form-control" value="{{categoria.nombre}}" name="nombre"  id="nombre" placeholder="Nombre">
+    </div>
+
+     <div class="form-group">
+      <label for="color">color</label>
+      <input type="text" class="form-control" value="{{categoria.color}}" name="color"  id="color" placeholder="color">
+    </div>
+  {# este es un token de seguridad que se recomienda ponerlo indicando que es un formulario que se envia a esta misma página #}
+    <input type="hidden" name="_token"  value="{{csrf_token('categoria')}}">
+  <button type="submit" class="btn btn-outline-success">Guardar</button>
+</form>
