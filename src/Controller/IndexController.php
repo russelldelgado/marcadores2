@@ -14,11 +14,16 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class IndexController extends AbstractController
 {
+
+    //definimos los elementos por página que se le pueden pasar a un elemento
+
+    public const ELEMENTO_POR_PAGINA = 1;
+
 //symfony busca por orden , es decir tendremos que introducir primero lo que es favoritos en el controlador y despues el otro ya que si no symfony nos daria un fallo
 //todos los controladores tiene que devolver un response si o si (render , thow , etc symphony lo trata como response)
 
-    #[Route("/buscar/{busqueda}", name:"app_busqueda" , defaults:['busqueda' => ''])]
-    public function busqueda(String $busqueda , MarcadorRepository $marcadorRepository , Request $request){
+    #[Route("/buscar/{busqueda}/{pagina}", name:"app_busqueda" , defaults:['busqueda' => '' , 'pagina' => 1] , requirements: ['pagina' => '\d+'])]
+    public function busqueda(String $busqueda  , int $pagina, MarcadorRepository $marcadorRepository , Request $request){
         //generamos el formulario de busqueda , he indicamos el tipo de formulario que es en este caso buscador type
         $formularioBusqueda = $this->createForm(BuscadorType::class);
         //primero validamos que el furmulario este enviado correctamenme y cargamos los datos con el request
@@ -33,16 +38,28 @@ class IndexController extends AbstractController
                 $busqueda = $formularioBusqueda->get('busqueda')->getData();
             }
         }
+        // $busqueda = (int) $busqueda > 0 ?  (int)$busqueda : $busqueda;
+
+        // if(is_int($busqueda)){
+        //     $busqueda = 'todas';
+        //     $pagina = $busqueda;
+        // }
+
         //si busqueda no esta vacia lo que hacemos es buscar en nuestra base de datos
         if(!empty($busqueda)){
-            $marcadores = $marcadorRepository->buscarPorNombre($busqueda);
+            $marcadores = $marcadorRepository->buscarPorNombre($busqueda , $pagina , self::ELEMENTO_POR_PAGINA);
         }
         //ahora bien si el forulario es enviado correctamente o no esta vacio me tiene que renderizar la vista 
         if(!empty($busqueda) || $formularioBusqueda->isSubmitted()){
 
             return $this->render('index/index.html.twig',[
                 'formulario_busqueda' => $formularioBusqueda->createView(), //creame la vista del formulario
-                'marcadores' =>$marcadores  //creame la lista de los marcadores 
+                'marcadores' =>$marcadores , //creame la lista de los marcadores 
+                'elementos_por_pagina' => self::ELEMENTO_POR_PAGINA,
+                'pagina' => $pagina,
+                'parametros_ruta' => [
+                    'busqueda' => $busqueda,
+                ],//le pasamos esto para que guarde los valores para cuando nos vamos entre págians
             ]);
 
         }
@@ -87,35 +104,55 @@ class IndexController extends AbstractController
 
 
 
-    #[Route("/favoritos", name:"app_favoritos")]
-    public function favoritos(MarcadorRepository $marcadorRepository){
+    #[Route("/favoritos/{pagina}", name:"app_favoritos" ,defaults: ['pagina' => 1] ,requirements:['pagina' => '\d+'])]
+    public function favoritos(int $pagina , MarcadorRepository $marcadorRepository){
 
-        $marcadores = $marcadorRepository->findBy([
-            'favorito' => true,
-        ]);
+        $elementos_por_pagina = self::ELEMENTO_POR_PAGINA; 
+
+        $marcadores = $marcadorRepository->buscarPorFavoritos($pagina , $elementos_por_pagina);
         return $this->render('index/index.html.twig', [
             'marcadores' => $marcadores,
+            'pagina' => $pagina,
+            'elementos_por_pagina' =>  $elementos_por_pagina,
         ]);
     }
 
+// indicamos que pueden pasarle una categoria o un parametro página que por defecto tendran un valor específico
+//en este apartado trabajamos con los requirimientos en el cual tenemos que indicar que pagina es de tipo numérico para que no nos de error , si no haria un match y devolvería un error 404
+//tendremos que modificar la query para que acepte el valor de elementos por categoria y nos devuelva lo que queremos
 
 
-    #[Route('/{categoria}', name: 'app_index' , defaults: ['categoria' => ''])]
-    public function index(String $categoria,CategoriaRepository $categoriaRepository, MarcadorRepository $marcadorRepository): Response
+    #[Route('/{categoria}/{pagina}', name: 'app_index' , defaults: ['categoria' => 'todas'  , 'pagina' => 1] , requirements:['pagina' => '\d+'])]
+    public function index(String $categoria, int $pagina ,CategoriaRepository $categoriaRepository, MarcadorRepository $marcadorRepository): Response
     {
+        $elementosPorPagina= self::ELEMENTO_POR_PAGINA;
+        // en algunas ocaciones categoria no viene asique tendremos que arrelgar eso 
+        //para eso comprobamos y si categoria en verdad es un entero eso quiere decir que categoria es una pagina 
 
-        if(!empty($categoria)){//comprovamos que el campo no este vacio 
+        $categoria = (int) $categoria > 0 ?  (int)$categoria : $categoria;
+
+        if(is_int($categoria)){
+            $categoria = 'todas';
+            $pagina = $categoria;
+        }
+
+        if($categoria && 'todas' !== $categoria){//comprovamos que el campo no este vacio 
 
             if(!$categoriaRepository->findByNombre($categoria)){
                 throw $this-> createNotFoundException("La categoria '$categoria' no existe");
             }
             
-            $marcadores = $marcadorRepository->buscarPorNombreDeCategoria($categoria);
+            $marcadores = $marcadorRepository->buscarPorNombreDeCategoria($categoria , $pagina , $elementosPorPagina);
         }else{
-            $marcadores = $marcadorRepository->findAll();
+            $marcadores = $marcadorRepository->buscarTodos($pagina , $elementosPorPagina);
         }
         return $this->render('index/index.html.twig', [
             'marcadores' => $marcadores,
+            'pagina' => $pagina,
+            'parametros_ruta' => [
+                'categoria' => $categoria,
+            ],//le pasamos esto para que guarde los valores para cuando nos vamos entre págians
+            'elementos_por_pagina' => $elementosPorPagina,
         ]);
 
 

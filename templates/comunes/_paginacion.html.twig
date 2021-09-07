@@ -1,0 +1,53 @@
+{# generamos una variable de twig , gracias al numero total de elementos partido por los elementos por página redondeando hacia arriba podemos obtener el numero de páginaas que tendrémos  #}
+{% set numero_total_paginas = (numero_total_elementos / elementos_por_pagina)|round(0,'ceil') %}
+{# generaremos los parametros que utilizaremos en el path es decir en las url #}
+{% set parametros = parametros_ruta is defined ? parametros_ruta : {} %}
+{# para obtener el nombre de la ruta decimos que si viene el nombre de la ruta cojemos el nombre actual y si no viene accedemos a la request y nos traemos el _route que seria algo com # #}
+{% set nombre_ruta = nombre_ruta is defined ? nombre_ruta : app.request.attributes.get('_route') %}
+
+
+{# llega el momento de hacer la lógica para pintar los components #}
+{# si numero total de páginas es mayor que uno entonces pintaremos la paginación #}
+{% if numero_total_paginas > 1 %}
+
+{# este seria el boton anteior para ir volviendo de páginas según esta lógica #}
+
+    <nav>
+        <ul class='pagination justify-content-center'>
+          <li class="page-item {{pagina_actual == 1 ? 'disable'}}" >
+              <a class="page-link" 
+                href = "{{path(nombre_ruta , {pagina:pagina_actual - 1  < 1 ? 1 : pagina_actual - 1}|merge(parametros))}}"
+              >
+              <spam>&laquo;</spam>
+              <spam>Anterior</spam>
+              </a>
+          </li>
+       
+{# este es el bucle que se encarga de pintar el número de páginas que tengo #}
+
+{% for i in 1..numero_total_paginas %}
+
+        <li class="page-item {{pagina_actual == i ? 'active'}}" >
+            <a class="page-link" 
+              href = "{{path(nombre_ruta , {pagina: i}|merge(parametros))}}"
+            >
+            <spam>{{i}}</spam>
+            </a>
+        </li>
+  
+{% endfor %}
+
+
+{# este seria el boton siguiente para ir pasando de páginas según esta lógica #}
+
+          <li class="page-item {{pagina_actual == numero_total_paginas ? 'disable'}}" >
+              <a class="page-link" 
+                href = "{{path(nombre_ruta , {pagina:pagina_actual + 1  <= numero_total_paginas ?  pagina_actual + 1 : pagina_actual}|merge(parametros))}}"
+              >
+              <spam>&raquo;</spam>
+              <spam>Siguiente</spam>
+              </a>
+          </li>
+        </ul>
+    </nav>
+{% endif %}

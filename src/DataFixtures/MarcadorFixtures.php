@@ -12,7 +12,7 @@ class MarcadorFixtures extends Fixture implements DependentFixtureInterface
     public function load(ObjectManager $manager)
     {
 
-        for ($i=0; $i < 100; $i++) { 
+        for ($i=0; $i < 20; $i++) { 
             $marcador = new Marcador();
             $marcador->setNombre("Google $i");
             $marcador->setUrl("https://www.google.com");
