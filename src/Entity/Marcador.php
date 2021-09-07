@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\MarcadorRepository;
 use App\Validator as AppAssert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -50,6 +52,16 @@ class Marcador
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $favorito;
+// es necesario que en el many to many metamos la persistencia en cascada para que se pueda crear de otra clase una etiqueta si o si , si no no nos dejara y saltara un error
+    /**
+     * @ORM\ManyToMany(targetEntity=Etiqueta::class , cascade={"persist"})
+     */
+    private $etiqueta;
+
+    public function __construct()
+    {
+        $this->etiqueta = new ArrayCollection();
+    }
 
      //con este campo indicamos que realce esta funcion antes de guardarse , es lo mismo que lo indiquemos en el constructor
     /**
@@ -120,6 +132,30 @@ class Marcador
     public function setFavorito(?bool $favorito): self
     {
         $this->favorito = $favorito;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Etiqueta[]
+     */
+    public function getEtiqueta(): Collection
+    {
+        return $this->etiqueta;
+    }
+
+    public function addEtiquetum(Etiqueta $etiquetum): self
+    {
+        if (!$this->etiqueta->contains($etiquetum)) {
+            $this->etiqueta[] = $etiquetum;
+        }
+
+        return $this;
+    }
+
+    public function removeEtiquetum(Etiqueta $etiquetum): self
+    {
+        $this->etiqueta->removeElement($etiquetum);
 
         return $this;
     }

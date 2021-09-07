@@ -12,6 +12,9 @@
       <link rel="stylesheet" href="/css/open-iconic-bootstrap.css" />
       <link rel="stylesheet" href="/css/offcanvas.css" />
       <link rel="stylesheet" href="/css/general.css" />
+        {% block css_propio %}
+        {% endblock  %}
+
     {% endblock %}
   </head>
   <body class="bg-light">
@@ -29,7 +32,9 @@
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/offcanvas.js"></script>
         <script src="/js/general.js"></script>
-      {% endblock %}
+        {% block javascript_propio %}{% endblock %}
+        {% endblock  %}
+
     {% endblock %}
   </body>
 </html>

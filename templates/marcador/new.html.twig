@@ -1,5 +1,8 @@
 {% extends 'base.html.twig' %}
 
+
+         
+
 {% block title %}New Marcador{% endblock %}
 
 {% block contenedor_principal %}
@@ -8,4 +11,14 @@
     {{ include('marcador/_form.html.twig') }}
 
     <a href="{{ path('app_index') }}">back to list</a>
+{% endblock %}
+
+{# introducimos los dos bloques de css para la libreria de select2js.... #}
+ {% block css_propio %}
+          <link rel="stylesheet" href="/css/select2.min.css" />
+{% endblock  %}
+
+{% block javascript_propio %}
+ <script src="/js/select2.min.js"></script>
+ <script src="{{ asset('bundles/tetranzselect2entity/js/select2entity.js') }}"></script>
 {% endblock %}
