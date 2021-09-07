@@ -30,6 +30,14 @@ class MarcadorRepository extends ServiceEntityRepository
                     ->getResult(); //traemos todos los resultados en este caso serian varios aunque podria ser solo uno  
     }
 
+    public function buscarPorNombre($nombre){
+        return $this->createQueryBuilder('m') //creamos una consulta donde m significa que es esta clase
+                    ->where('m.nombre like :nombre') //le decimos que el nombre de categoria sera igual al parametro nombreCategoria
+                    ->setParameter('nombre' , "%$nombre%") //indicamos que :nombreCategoria es igual a la variable que le estamos pasando
+                    ->getQuery() //traemos la consulta
+                    ->getResult(); //traemos todos los resultados en este caso serian varios aunque podria ser solo uno  
+    }
+
     // /**
     //  * @return Marcador[] Returns an array of Marcador objects
     //  */

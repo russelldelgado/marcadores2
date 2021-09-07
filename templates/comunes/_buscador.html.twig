@@ -1,0 +1,57 @@
+{# form_start indica el inicio del formulario con el nombre formulario_busqueda que viene desde el controlador #}
+{# formulario_busqueda es el nombre que le indicaremos en el controlador #}
+{# attr : indica los atributos que tiene nuestro formulario , como clases , si se valida o no etc... #}
+{# methos : indica el metodo con el que el formulario se mandara  #}
+{# action : En este caso indica la ruta donde irá redirigido el formulario , en este caso a la ruta app_busqueda con su determiando controlador #}
+{# formulario_busqueda.busqueda se corresponde con los determinados campos que les hayamos creado en buscadortype.php en este caso tenemos otro que es buscar #}
+{# form_end indicamos el formulario que vamos a cerrar en este caso el mismo que acabamos de abrir #}
+
+
+{{
+  form_start(
+    formulario_busqueda ,
+    {
+      attr : {
+        novalidate : 'novalidate',
+        class : 'form-inline'
+      },
+      method : 'POST',
+      action : path('app_busqueda')
+
+    }
+    
+  )
+}}
+{# este es el campo de busqueda que hemos definido anteriormente en buscadorType.php indicamos que este es el buscador #}
+{{
+  form_widget(
+    formulario_busqueda.busqueda,
+      {
+        attr : {
+        class : 'ml-2'
+        }
+      }
+  )
+}}
+
+{# este es el campo de busqueda que hemos definido anteriormente en buscadorType.php indicamos que este es el boton de submit como boton primario #}
+{{
+  form_widget(
+    formulario_busqueda.buscar,
+      {
+       attr :{
+       class : 'btn btn-primary ml-2'
+       }
+      }
+  )
+}}
+
+{# pintamos lo errores del formulario  solo para el campo de busqueda#}
+{# 
+{{
+  form_errors(formulario_busqueda.busqueda)
+}} #}
+
+{{form_end(formulario_busqueda)}}
+
+{# despues de generar esto tenemos que generar la accion del controlador #}
