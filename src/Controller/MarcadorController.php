@@ -2,7 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Etiqueta;
 use App\Entity\Marcador;
+use App\Entity\MarcadorEtiqueta;
+use App\Form\EtiquetaType;
 use App\Form\MarcadorType;
 use App\Repository\MarcadorRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -31,6 +34,17 @@ class MarcadorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($marcador);
+            $etiquetas = $form->get('etiquetas') -> getData(); // con esto se supone que tenemos todas las etiquetas mandadas ne el submit
+
+
+            foreach($etiquetas as $etiqueta){
+                $marcadorEtiqueta = new MarcadorEtiqueta();
+                $marcadorEtiqueta->setMarcador($marcador);
+                $marcadorEtiqueta->setEtiqueta($etiqueta);
+                $entityManager->persist($marcadorEtiqueta); //persistimos la nueva entidad
+            }
+
+
             $entityManager->flush();
 
             $this->addFlash('success' , "Marcador creador correctamente");
@@ -58,11 +72,37 @@ class MarcadorController extends AbstractController
         $form = $this->createForm(MarcadorType::class, $marcador);
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash('success' , "Marcador editado correctamente");
 
-            return $this->redirectToRoute('app_index', [], Response::HTTP_SEE_OTHER);
+        //esto no se porque no lo tengo pero lo copio del tio ahora mismo
+
+        // $etiquetum = new Etiqueta();
+        // $formEtiqueta = $this->createForm(EtiquetaType::class , $etiquetum ,[
+            // 'action' => $this->generateUrl('nueva_etiqueta_ajax')
+        // ]);
+
+        //hasta aqui es donde no tenia pero ya si que lo tengo
+
+
+        $marcadorEtiquetasActuales = $marcador->getMarcadorEtiquetas();
+
+
+        if ($form->isSubmitted()) {
+
+            if($form->isValid()){
+                $entityManager = $this->getDoctrine()->getManager();
+                $this->addFlash('success' , "Marcador editado correctamente");
+                return $this->redirectToRoute('app_index', [], Response::HTTP_SEE_OTHER);
+    
+            }else{
+                //TODO : QUEDA POR AHCER ESTO A VER
+                $etiquetas = [];
+                foreach($marcadorEtiquetasActuales as $marcadorEtiqueta){
+                    $etiquetas[] = $marcadorEtiqueta->getEtiqueta(); //asignamos el valor de la etiqueta al array de etiquetas
+                }
+
+                $form->get('etiquetas') -> setData($etiquetas);// recuperamos el array de etiquetas y le pasamos un array con todas las etiquetas que tiene que pintar
+            }
+          
         }
 
 
@@ -70,6 +110,7 @@ class MarcadorController extends AbstractController
         return $this->renderForm('marcador/edit.html.twig', [
             'marcador' => $marcador,
             'form' => $form,
+            // 'form_etiqueta' => $formEtiqueta -> createView(), //esto no se porque no lo tenia puesto antes pero hay que ponerlo en el curso visto no se que punto me salte
         ]);
     }
 

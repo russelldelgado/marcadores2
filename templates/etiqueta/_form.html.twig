@@ -1,4 +1,12 @@
-{{ form_start(form) }}
+{% set ajax = ajax is defined and ajax %}
+
+{% if ajax %}
+{# si es ajax tenemos que incluir los mensajes de error #}
+{{include('comunes/_mensajes.html.twig')}}
+{% endif %}
+
+
+{{ form_start(form,attr:{novalidate: 'novalidate' , 'data-ayax' : ajax ? true : false}) }}
     {{ form_widget(form) }}
     <button class="btn">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

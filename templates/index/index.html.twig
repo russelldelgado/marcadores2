@@ -29,12 +29,12 @@
               </small>
             </span>
 
-            {% if marcador.etiqueta is not empty %}
+            {% if marcador.marcadorEtiquetas is not empty %}
             
            <span class="d-block">
               <small>
-              {% for etiqueta in marcador.etiqueta %}
-                {{marcador.nombre  ~ (not loop.last ? ', ' )}} {# ~ --> significa contatener ,si no es el ultimo registro del bucle añade una ,#}
+              {% for marcadorEtiquetas in marcador.marcadorEtiquetas %}
+                {{marcadorEtiquetas.etiqueta.nombre  ~ marcadorEtiquetas.creado |tiempo({formato : formato_fecha}) ~ (not loop.last ? ', ' )}} {# ~ --> significa contatener ,si no es el ultimo registro del bucle añade una ,#}
                 
               {% endfor %}
               </small>

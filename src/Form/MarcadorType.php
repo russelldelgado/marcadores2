@@ -17,7 +17,7 @@ class MarcadorType extends AbstractType
             ->add('url')
             ->add('categoria')
             ->add('favorito')
-            ->add('etiqueta' , Select2EntityType::class , [
+            ->add('etiquetas' , Select2EntityType::class , [
                     'multiple' => true, //se puede añadir mas de una etiqueta
                     'remote_route' => 'app_buscar_etiquetas' ,//esta es la funcion que nos va a devolver el listado de etiquetas que se pueden mostrar 
                     'class' => '\App\Entity\Etiqueta',//esta es la clase que vamos a renderizar aqui
@@ -32,6 +32,7 @@ class MarcadorType extends AbstractType
                         'new_tag_text' => '(nuevo)' ,// esto lo ponemos para diferenciar cuales son nuevos y cuales no lo son
                         'tag_separators' => '[","]' , //indicamos que los separadores en este caso es la "," coma , por defecto es el espacio
                     ] , //se permiten añadir nuevos registros desde aquí ya que solo tiene un campo y no tendríamos problemas
+                    'mapped' => false ,//Para todos los valores que no son de la entidad pero queramos añadirlos hay que hacer esto
                     ]) //para esto nos vamos a descargar un bundle para un selector que sera select2entity-bundle
                             //este bundle requiere de dos dependencias --selec2css y select2js que tendremos que descargarlas
         ;

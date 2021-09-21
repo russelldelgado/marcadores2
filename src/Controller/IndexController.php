@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class IndexController extends AbstractController
 {
@@ -123,7 +124,14 @@ class IndexController extends AbstractController
 
 
     #[Route('/{categoria}/{pagina}', name: 'app_index' , defaults: ['categoria' => 'todas'  , 'pagina' => 1] , requirements:['pagina' => '\d+'])]
-    public function index(String $categoria, int $pagina ,CategoriaRepository $categoriaRepository, MarcadorRepository $marcadorRepository): Response
+    public function index(
+        String $categoria, 
+        int $pagina ,
+        CategoriaRepository $categoriaRepository, 
+        MarcadorRepository $marcadorRepository,
+        TranslatorInterface $translator,
+        
+        ): Response
     {
         $elementosPorPagina= self::ELEMENTO_POR_PAGINA;
         // en algunas ocaciones categoria no viene asique tendremos que arrelgar eso 
@@ -139,7 +147,13 @@ class IndexController extends AbstractController
         if($categoria && 'todas' !== $categoria){//comprovamos que el campo no este vacio 
 
             if(!$categoriaRepository->findByNombre($categoria)){
-                throw $this-> createNotFoundException("La categoria '$categoria' no existe");
+
+                throw $this-> createNotFoundException( $translator->trans("La categoria \"{categoria}\" no existe" , [  //{categoria} -> no tiene porque tener este formato , puede tenre otro pero lo ponemos así par que no vayamos a tener errores, podemos poner existe o lo que sea y se cambiaría eso
+                    '{categoria}' => $categoria, // le pasamos la categoria
+                ],
+                'messages', //las transcripciones de validación se encontraran en el fichero de validación de nuestra propia aplicación la de message
+            ));
+                // throw $this-> createNotFoundException("La categoria '$categoria' no existe");
             }
             
             $marcadores = $marcadorRepository->buscarPorNombreDeCategoria($categoria , $pagina , $elementosPorPagina);

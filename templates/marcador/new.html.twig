@@ -11,6 +11,11 @@
     {{ include('marcador/_form.html.twig') }}
 
     <a href="{{ path('app_index') }}">back to list</a>
+
+    <br/>
+
+   {{ include("comunes/_crearEtiqueta.html.twig") }}
+
 {% endblock %}
 
 {# introducimos los dos bloques de css para la libreria de select2js.... #}

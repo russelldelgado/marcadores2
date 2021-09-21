@@ -12,7 +12,7 @@
 
   <div class="navbar-collapse offcanvas-collapse" id="navbarsExampleDefault">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item"><a class="nav-link {{ app_ruta == 'app_index' and nombre_categoria is empty ? 'active' }}" href="{{path('app_index')}}">Todas</a></li>
+      <li class="nav-item"><a class="nav-link {{ app_ruta == 'app_index' and nombre_categoria is empty ? 'active' }}" href="{{path('app_index')}}">{{'Todas'|trans}}</a></li>
       <li class="nav-item"><a class="nav-link {{ app_ruta == 'app_favoritos' ? 'active' }}" href="{{path('app_favoritos')}}">Favoritos</a></li>
 
     {% for categoria in categoria_repository.findAll() %}
@@ -30,6 +30,20 @@
         <span class="oi oi-plus" title="añadir" aria-hidden="true"></span>
       </a>
     </div>
+
+{# tenemos que mostrar el renderizado del template  #}
+ {{ 
+     render(
+     controller(
+       'App\\Controller\\IdiomaController::index',
+       {
+        ruta:app_ruta
+       }
+      )
+      )
+    }}
+
+    
 {# renderizamos el controlador para no tener que estar pasandole parámetros , e indicamos que si busqueda esta definido lo añada directamente , lo primero que indicamos es la ruta #}
   {# busqueda es el parametro que se envia en el controlador #}
    {# si el formulario esta definido que lo incluya y le pasamos como parametro el formulario de busqueda #}

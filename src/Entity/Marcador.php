@@ -52,15 +52,17 @@ class Marcador
      * @ORM\Column(type="boolean", nullable=true)
      */
     private $favorito;
-// es necesario que en el many to many metamos la persistencia en cascada para que se pueda crear de otra clase una etiqueta si o si , si no no nos dejara y saltara un error
+
     /**
-     * @ORM\ManyToMany(targetEntity=Etiqueta::class , cascade={"persist"})
+     * @ORM\OneToMany(targetEntity=MarcadorEtiqueta::class, mappedBy="marcador")
      */
-    private $etiqueta;
+    private $marcadorEtiquetas;
+
 
     public function __construct()
     {
         $this->etiqueta = new ArrayCollection();
+        $this->marcadorEtiquetas = new ArrayCollection();
     }
 
      //con este campo indicamos que realce esta funcion antes de guardarse , es lo mismo que lo indiquemos en el constructor
@@ -156,6 +158,36 @@ class Marcador
     public function removeEtiquetum(Etiqueta $etiquetum): self
     {
         $this->etiqueta->removeElement($etiquetum);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MarcadorEtiqueta[]
+     */
+    public function getMarcadorEtiquetas(): Collection
+    {
+        return $this->marcadorEtiquetas;
+    }
+
+    public function addMarcadorEtiqueta(MarcadorEtiqueta $marcadorEtiqueta): self
+    {
+        if (!$this->marcadorEtiquetas->contains($marcadorEtiqueta)) {
+            $this->marcadorEtiquetas[] = $marcadorEtiqueta;
+            $marcadorEtiqueta->setMarcador($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMarcadorEtiqueta(MarcadorEtiqueta $marcadorEtiqueta): self
+    {
+        if ($this->marcadorEtiquetas->removeElement($marcadorEtiqueta)) {
+            // set the owning side to null (unless already changed)
+            if ($marcadorEtiqueta->getMarcador() === $this) {
+                $marcadorEtiqueta->setMarcador(null);
+            }
+        }
 
         return $this;
     }

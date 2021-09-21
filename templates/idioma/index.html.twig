@@ -1,0 +1,17 @@
+<div  class="dropdown" >
+    <a class="btn btn-outline.primary dropdown-toggle" href="#" role="button" id="selectorIdioma" data-toggle="dropdown">
+        {{idioma_actual}}
+    </a>
+
+    <div class="dropdown-menu" aria-labelledby="selectorIdioma"  >
+        {% for lenguaje ,nombre_lenguaje in listado_idiomas %} {# podemos acceder a listado idiomas por que lo hemos declarado en twig.yaml #}
+            <form action="{{ path('app_idioma',{'_locale' : lenguaje,}) }}" method="POST">
+                <input type="hidden" name="ruta" value="{{ruta}}"> {#Esto lo hacemos para que nos devuelva a la ruta que estabamos#}
+                <button type="summit"  class="btn btn-dropdown-item {{ idioma_actual == lenguaje ? 'active'}}">
+                    {{nombre_lenguaje}}
+                </button>
+                
+            </form>
+        {% endfor %}
+    </div>
+</div>
